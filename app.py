@@ -4,13 +4,14 @@
 import sys
 import os
 import json
-from jello import cli
+from jello.cli import __version__ as jello_version
+from jello.cli import pyquery, load_json
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import HtmlFormatter
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, Markup
 from flask_wtf import FlaskForm
-from wtforms.fields import TextAreaField, SelectField, BooleanField, SubmitField
+from wtforms.fields import TextAreaField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
 
@@ -36,28 +37,38 @@ def home():
     output = ''
     if form.validate_on_submit():
         try:
-            parser = importlib.import_module('jc.parsers.' + form.command_parser.data)
-            output = parser.parse(form.command_output.data, quiet=True)
-        except Exception:
-            flash('jc was unable to parse the content. Did you use the correct parser?', 'danger')
-            return redirect(url_for('home'))
+            json_input = form.json_input.data
+            list_dict_data = load_json(json_input)
+            query_input = form.query_input.data
+            compact = not form.pretty_print.data
+            schema = form.schema.data
+            lines = form.lines.data
+            output, *_ = pyquery(data=list_dict_data, query=query_input, compact=compact, lines=lines, schema=schema, as_lib=True)
+        except Exception as e:
+            flash_msg = Markup(f'<p>jello ran into the following exception when running your query:<p><strong>{type(e).__name__}:</strong><p>{e}')
+            flash(flash_msg, 'danger')
+            return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
+
         if form.pretty_print.data:
             output = json.dumps(output, indent=2)
         else:
             output = json.dumps(output)
         output = highlight(output, JsonLexer(), HtmlFormatter(noclasses=True))
-    return render_template('home.html', title=TITLE, jc_info=jc_info, form=form, output=output)
+    return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
 
 
 # --- FORMS ---
 
 
 class MyInput(FlaskForm):
-    command_parser = SelectField('Parser', choices=parser_mod_list)
-    command_output = TextAreaField('Command Output', validators=[DataRequired()])
+    json_input = TextAreaField('JSON Input', validators=[DataRequired()])
+    query_input = TextAreaField('Jello Query', validators=[DataRequired()])
     pretty_print = BooleanField('Pretty Print', default='checked')
-    submit = SubmitField('Convert to JSON')
+    schema = BooleanField('Print Schema Output')
+    lines = BooleanField('Print Lines Output')
+    submit = SubmitField('Query JSON')
 
 
 if __name__ == '__main__':
+    # socketio.run(app)
     app.run(debug=DEBUG)

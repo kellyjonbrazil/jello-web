@@ -3,19 +3,19 @@
   <form method="POST" action="">
     {{ form.csrf_token }}
     <div class="form-group">
-      {{ form.command_parser.label(class="form-control-label") }}: {{ form.command_parser(class="form-control") }}
+      {{ form.json_input.label(class="form-control-label") }}: {{ form.json_input(class="form-control") }}
     </div>
     <div class="form-group">
-      {{ form.command_output.label(class="form-control-label") }}:
-      {% if form.command_output.errors %}
-        {{ form.command_output(class="form-control is-invalid") }}
+      {{ form.query_input.label(class="form-control-label") }}:
+      {% if form.query_input.errors %}
+        {{ form.query_input(class="form-control is-invalid") }}
           <div class="invalid-feedback">
-            {% for error in form.command_output.errors %}
+            {% for error in form.query_input.errors %}
               <span>{{ error }}</span>
             {% endfor %}
           </div>
       {% else %}
-        {{ form.command_output(class="form-control") }}
+        {{ form.query_input(class="form-control") }}
       {% endif %}
     </div>
     <div class="form-check">
@@ -29,7 +29,7 @@
   <hr>
   <div class="card">
     <div class="card-header">
-      JSON Conversion
+      Result
     </div>
     <div class="card-body">
       {{ output|safe }}
