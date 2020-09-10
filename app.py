@@ -40,7 +40,7 @@ def home():
             json_input = form.json_input.data
             list_dict_data = load_json(json_input, as_lib=True)
         except Exception as e:
-            e_str = str(e).replace(r'\n', '<br>')
+            e_str = str(e).replace('\n', '<br>')
             flash_msg = Markup(f'<p>jello could not read the input. Is it JSON or JSON Lines?<p><strong>{type(e).__name__}:</strong><p>{e_str}')
             flash(flash_msg, 'danger')
             return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
@@ -52,7 +52,8 @@ def home():
             lines = form.lines.data
             output, *_ = pyquery(data=list_dict_data, query=query_input, compact=compact, lines=lines, schema=schema, as_lib=True)
         except Exception as e:
-            flash_msg = Markup(f'<p>jello ran into the following exception when running your query:<p><strong>{type(e).__name__}:</strong><p>{e}')
+            e_str = str(e).replace('\n', '<br>')
+            flash_msg = Markup(f'<p>jello ran into the following exception when running your query:<p><strong>{type(e).__name__}:</strong><p>{e_str}')
             flash(flash_msg, 'danger')
             return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
 
