@@ -9,7 +9,7 @@ from jello.cli import pyquery, load_json
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import HtmlFormatter
-from flask import Flask, render_template, redirect, url_for, flash, Markup
+from flask import Flask, render_template, flash, Markup
 from flask_wtf import FlaskForm
 from wtforms.fields import TextAreaField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
@@ -38,7 +38,14 @@ def home():
     if form.validate_on_submit():
         try:
             json_input = form.json_input.data
-            list_dict_data = load_json(json_input)
+            list_dict_data = load_json(json_input, as_lib=True)
+        except Exception as e:
+            e_str = str(e).replace(r'\n', '<br>')
+            flash_msg = Markup(f'<p>jello could not read the input. Is it JSON or JSON Lines?<p><strong>{type(e).__name__}:</strong><p>{e_str}')
+            flash(flash_msg, 'danger')
+            return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
+
+        try:
             query_input = form.query_input.data
             compact = not form.pretty_print.data
             schema = form.schema.data
@@ -61,7 +68,7 @@ def home():
 
 
 class MyInput(FlaskForm):
-    json_input = TextAreaField('JSON Input', validators=[DataRequired()])
+    json_input = TextAreaField('JSON or JSON Lines Input', validators=[DataRequired()])
     query_input = TextAreaField('Jello Query', validators=[DataRequired()])
     pretty_print = BooleanField('Pretty Print', default='checked')
     schema = BooleanField('Print Schema Output')
