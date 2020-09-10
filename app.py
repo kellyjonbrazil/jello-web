@@ -16,7 +16,7 @@ from wtforms.validators import DataRequired
 
 
 TITLE = 'jello web'
-DEBUG = True
+DEBUG = False
 
 app = Flask(__name__)
 
