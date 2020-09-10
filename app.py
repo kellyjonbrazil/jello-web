@@ -62,6 +62,7 @@ def home():
         else:
             output = json.dumps(output)
         output = highlight(output, JsonLexer(), HtmlFormatter(noclasses=True))
+
     return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
 
 

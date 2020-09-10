@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="navbar-brand" href="#">{{ title }}</a>
+  <a class="navbar-brand" href="{{ url_for('home') }}">{{ title }}</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -26,7 +26,10 @@
       </div>
       <div class="modal-body">
         <p class="card-text"><strong>JSON or JSON Lines Input:</strong> Copy/Paste the JSON or JSON Lines input you would like to query.
-        <p class="card-text"><strong>Jello Query:</strong> Use Python dict and list syntax to query, filter, or reshape the input.
+        <p class="card-text"><strong>Jello Query:</strong> Use Python dict and list syntax to query, filter, or reshape the input. All Python capabilities are available, including loops, branching, comprehensions, math, etc.
+        <p class="card-text">Use the <code>_</code> variable to reference the JSON Input. e.g:
+        <p class="card-text"><code>_['foo']</code>
+        <p class="card-text">See this <a href="https://blog.kellybrazil.com/2020/03/25/jello-the-jq-alternative-for-pythonistas/">blog post</a> for examples.
         <p class="card-text"><strong>Pretty Print:</strong> If checked, formats the JSON result with indentation. Otherwise, the resulting JSON will be printed on a single line.
       </div>
     </div>
