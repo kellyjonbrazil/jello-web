@@ -5,7 +5,7 @@ import sys
 import os
 import json
 from jello.cli import __version__ as jello_version
-from jello.cli import pyquery, load_json
+from jello.cli import opts, pyquery, load_json
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import HtmlFormatter
@@ -38,7 +38,7 @@ def home():
     if form.validate_on_submit():
         try:
             json_input = form.json_input.data
-            list_dict_data = load_json(json_input, as_lib=True)
+            list_dict_data = load_json(json_input)
         except Exception as e:
             e_str = str(e).replace('\n', '<br>')
             flash_msg = Markup(f'<p>jello could not read the input. Is it JSON or JSON Lines?<p><strong>{type(e).__name__}:</strong><p>{e_str}')
@@ -50,7 +50,11 @@ def home():
             compact = not form.pretty_print.data
             schema = form.schema.data
             lines = form.lines.data
-            output, *_ = pyquery(data=list_dict_data, query=query_input, compact=compact, lines=lines, schema=schema, as_lib=True)
+
+            opts.compact = compact
+            opts.lines = lines
+            opts.schema = schema
+            output, *_ = pyquery(data=list_dict_data, query=query_input)
         except Exception as e:
             e_str = str(e).replace('\n', '<br>')
             flash_msg = Markup(f'<p>jello ran into the following exception when running your query:<p><strong>{type(e).__name__}:</strong><p>{e_str}')
