@@ -27,12 +27,18 @@
       {% else %}
         {{ form.query_input(class="form-control", style="font-family:monospace;") }}
       {% endif %}
-    </div>
-    <div class="form-check">
-      {{ form.pretty_print(class="form-check-input mb-3") }} {{ form.pretty_print.label(class="form-check-label mb-3") }}
-    </div>
-    <div class="form-group">
-      {{ form.submit(class="btn btn-success") }}  <a class="btn btn-outline-info" href="{{ url_for('home') }}">Clear</a>
+      <div class="form-check">
+      {{ form.compact(class="form-check-input") }} {{ form.compact.label(class="form-check-label") }}
+      </div>
+      <div class="form-check">
+        {{ form.lines(class="form-check-input") }} {{ form.lines.label(class="form-check-label") }}
+      </div>
+      <div class="form-check">
+        {{ form.schema(class="form-check-input mb-3") }} {{ form.schema.label(class="form-check-label mb-3") }}
+      </div>
+      <div class="form-group">
+        {{ form.submit(class="btn btn-success") }}  <a class="btn btn-outline-info" href="{{ url_for('home') }}">Clear</a>
+      </div>
     </div>
   </form>
 
@@ -48,7 +54,11 @@
         </button>
     </div>
     <div class="card-body" id="result">
-      {{ output|safe }}
+      {% if form.schema.data %}
+        <p class="text-monospace bg-light"><small>{{ output|safe }}</p>
+      {% else %}
+        {{ output|safe }}
+      {% endif %}
     </div>
   </div>
 {% endblock %}

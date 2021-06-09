@@ -4,8 +4,9 @@
 import sys
 import os
 import json
+import jello.cli
 from jello.cli import __version__ as jello_version
-from jello.cli import opts, pyquery, load_json
+from jello.cli import pyquery, load_json, create_schema, create_json, set_env_colors, opts
 from pygments import highlight
 from pygments.lexers import JsonLexer
 from pygments.formatters import HtmlFormatter
@@ -35,6 +36,7 @@ else:
 def home():
     form = MyInput()
     output = ''
+    jello.cli.schema_list = []
     if form.validate_on_submit():
         try:
             json_input = form.json_input.data
@@ -47,25 +49,29 @@ def home():
 
         try:
             query_input = form.query_input.data
-            compact = not form.pretty_print.data
-            schema = form.schema.data
-            lines = form.lines.data
+            opts.schema = form.schema.data
+            opts.compact = form.compact.data
+            opts.lines = form.lines.data
+            response = pyquery(data=list_dict_data, query=query_input)
 
-            opts.compact = compact
-            opts.lines = lines
-            opts.schema = schema
-            output, *_ = pyquery(data=list_dict_data, query=query_input)
+            # if DotMap returns a bound function then we know it was a reserved attribute name
+            if hasattr(response, '__self__'):
+                raise ValueError(Markup('<p>A reserved key name with dotted notation was used in the query. Please use python bracket dict notation to access this key.'))
+            
+            if opts.schema:
+                opts.mono = True
+                set_env_colors()
+                create_schema(response)
+                output = '<br>'.join(jello.cli.schema_list)
+            else:
+                output = create_json(response)
+                output = highlight(output, JsonLexer(), HtmlFormatter(noclasses=True))
+
         except Exception as e:
             e_str = str(e).replace('\n', '<br>')
             flash_msg = Markup(f'<p>jello ran into the following exception when running your query:<p><strong>{type(e).__name__}:</strong><p>{e_str}')
             flash(flash_msg, 'danger')
             return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
-
-        if form.pretty_print.data:
-            output = json.dumps(output, indent=2)
-        else:
-            output = json.dumps(output)
-        output = highlight(output, JsonLexer(), HtmlFormatter(noclasses=True))
 
     return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
 
@@ -74,9 +80,11 @@ def home():
 
 
 class MyInput(FlaskForm):
-    json_input = TextAreaField('JSON or JSON Lines Input', validators=[DataRequired()])
-    query_input = TextAreaField('Jello Query', validators=[DataRequired()])
-    pretty_print = BooleanField('Pretty Print', default='checked')
+    json_input = TextAreaField('JSON or JSON Lines Input', validators=[DataRequired()],
+                               default='{"foo": {"bar": [1, 2, 3]}}')
+    query_input = TextAreaField('Jello Query', validators=[DataRequired()],
+                                default='_')
+    compact = BooleanField('Compact Output')
     schema = BooleanField('Print Schema Output')
     lines = BooleanField('Print Lines Output')
     submit = SubmitField('Query JSON')
