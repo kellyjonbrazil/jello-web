@@ -83,7 +83,7 @@ class MyInput(FlaskForm):
     json_input = TextAreaField('JSON or JSON Lines Input', validators=[DataRequired()],
                                default='{"foo": {"bar": [1, 2, 3]}}')
     query_input = TextAreaField('Jello Query', validators=[DataRequired()],
-                                default='_')
+                                default='_.foo')
     compact = BooleanField('Compact Output')
     schema = BooleanField('Print Schema Output')
     lines = BooleanField('Print Lines Output')
