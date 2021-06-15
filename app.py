@@ -3,7 +3,6 @@
 
 import sys
 import os
-import jello.cli
 from jello import __version__ as jello_version
 from jello.lib import opts, load_json, pyquery, Schema, Json
 from flask import Flask, render_template, flash, Markup
@@ -32,7 +31,7 @@ else:
 def home():
     form = MyInput()
     output = ''
-    jello.cli.schema_list = []
+
     if form.validate_on_submit():
         try:
             json_input = form.json_input.data
