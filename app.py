@@ -3,17 +3,16 @@
 
 import sys
 import os
-import json
 import jello.cli
-from jello.cli import __version__ as jello_version
-from jello.cli import pyquery, load_json, create_schema, create_json, set_env_colors, opts
-from pygments import highlight
-from pygments.lexers import JsonLexer
-from pygments.formatters import HtmlFormatter
+from jello import __version__ as jello_version
+from jello.lib import opts, load_json, pyquery, Schema, Json
 from flask import Flask, render_template, flash, Markup
 from flask_wtf import FlaskForm
 from wtforms.fields import TextAreaField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
+from pygments import highlight
+from pygments.lexers import JsonLexer
+from pygments.formatters import HtmlFormatter
 
 
 TITLE = 'jello web'
@@ -54,17 +53,14 @@ def home():
             opts.lines = form.lines.data
             response = pyquery(data=list_dict_data, query=query_input)
 
-            # if DotMap returns a bound function then we know it was a reserved attribute name
-            if hasattr(response, '__self__'):
-                raise ValueError(Markup('<p>A reserved key name with dotted notation was used in the query. Please use python bracket dict notation to access this key.'))
-            
             if opts.schema:
                 opts.mono = True
-                set_env_colors()
-                create_schema(response)
-                output = '<br>'.join(jello.cli.schema_list)
+                schema = Schema()
+                schema.create_schema(response)
+                output = schema.schema_html()
             else:
-                output = create_json(response)
+                json_out = Json()
+                output = json_out.create_json(response)
                 output = highlight(output, JsonLexer(), HtmlFormatter(noclasses=True))
 
         except Exception as e:
