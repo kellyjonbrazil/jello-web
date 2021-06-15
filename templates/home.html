@@ -54,11 +54,7 @@
         </button>
     </div>
     <div class="card-body" id="result">
-      {% if form.schema.data %}
-        <p class="text-monospace bg-light"><small>{{ output|safe }}</p>
-      {% else %}
-        {{ output|safe }}
-      {% endif %}
+      {{ output|safe }}
     </div>
   </div>
 {% endblock %}

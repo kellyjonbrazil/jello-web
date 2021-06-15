@@ -50,10 +50,10 @@ def home():
             response = pyquery(data=list_dict_data, query=query_input)
 
             if opts.schema:
-                opts.mono = True
+                # opts.mono = True
                 schema = Schema()
                 schema.create_schema(response)
-                output = schema.schema_html()
+                output = schema.html_output()
             else:
                 json_out = Json()
                 output = json_out.create_json(response)
