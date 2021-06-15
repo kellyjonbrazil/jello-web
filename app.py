@@ -10,9 +10,6 @@ from flask import Flask, render_template, flash, Markup
 from flask_wtf import FlaskForm
 from wtforms.fields import TextAreaField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
-from pygments import highlight
-from pygments.lexers import JsonLexer
-from pygments.formatters import HtmlFormatter
 
 
 TITLE = 'jello web'
@@ -42,7 +39,7 @@ def home():
             list_dict_data = load_json(json_input)
         except Exception as e:
             e_str = str(e).replace('\n', '<br>')
-            flash_msg = Markup(f'<p>jello could not read the input. Is it JSON or JSON Lines?<p><strong>{type(e).__name__}:</strong><p>{e_str}')
+            flash_msg = Markup(f'<p>Jello could not read the input. Is it JSON or JSON Lines?<p><strong>{type(e).__name__}:</strong><p>{e_str}')
             flash(flash_msg, 'danger')
             return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
 
@@ -61,11 +58,11 @@ def home():
             else:
                 json_out = Json()
                 output = json_out.create_json(response)
-                output = highlight(output, JsonLexer(), HtmlFormatter(noclasses=True))
+                output = json_out.html_output(output)
 
         except Exception as e:
             e_str = str(e).replace('\n', '<br>')
-            flash_msg = Markup(f'<p>jello ran into the following exception when running your query:<p><strong>{type(e).__name__}:</strong><p>{e_str}')
+            flash_msg = Markup(f'<p>Jello ran into the following exception when running your query:<p><strong>{type(e).__name__}:</strong><p>{e_str}')
             flash(flash_msg, 'danger')
             return render_template('home.html', title=TITLE, jello_version=jello_version, form=form, output=output)
 
@@ -81,8 +78,8 @@ class MyInput(FlaskForm):
     query_input = TextAreaField('Jello Query', validators=[DataRequired()],
                                 default='_.foo')
     compact = BooleanField('Compact Output')
-    schema = BooleanField('Print Schema Output')
-    lines = BooleanField('Print Lines Output')
+    schema = BooleanField('Schema Output')
+    lines = BooleanField('Lines Output')
     submit = SubmitField('Query JSON')
 
 
