@@ -45,12 +45,12 @@ def home():
         try:
             query_input = form.query_input.data
             opts.schema = form.schema.data
+            opts.types = form.types.data
             opts.compact = form.compact.data
             opts.lines = form.lines.data
             response = pyquery(data=list_dict_data, query=query_input)
 
             if opts.schema:
-                # opts.mono = True
                 schema = Schema()
                 schema.create_schema(response)
                 output = schema.html_output()
@@ -78,6 +78,7 @@ class MyInput(FlaskForm):
                                 default='_.foo')
     compact = BooleanField('Compact Output')
     schema = BooleanField('Schema Output')
+    types = BooleanField('Schema Type Annotations')
     lines = BooleanField('Lines Output')
     submit = SubmitField('Query JSON')
 
