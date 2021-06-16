@@ -52,8 +52,8 @@ def home():
 
             if opts.schema:
                 schema = Schema()
-                schema.create_schema(response)
-                output = schema.html_output()
+                output = schema.create_schema(response)
+                output = schema.html_output(output)
             else:
                 json_out = Json()
                 output = json_out.create_json(response)
