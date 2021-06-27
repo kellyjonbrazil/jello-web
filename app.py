@@ -48,7 +48,7 @@ def home():
             opts.types = form.types.data
             opts.compact = form.compact.data
             opts.lines = form.lines.data
-            response = pyquery(data=list_dict_data, query=query_input)
+            response = pyquery(list_dict_data, query_input)
 
             if opts.schema:
                 schema = Schema()
