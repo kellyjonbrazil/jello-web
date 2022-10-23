@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: jello-web
+    env: python
+    # buildCommand: "./build.sh"
+    startCommand: "gunicorn app:app"
